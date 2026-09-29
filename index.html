@@ -5,21 +5,376 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Leaflet JS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
     <style>
         html,
         body,
         #map {
             width: 100%;
-            height: 100%;
+            height: calc(100vh - 56px);
             margin: 0;
+        }
+
+        /* Modal Soft Orange Theme */
+        .modal-soft-orange .modal-content {
+            border: 1px solid #fed7aa;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(251, 146, 60, 0.15);
+            background-color: #fffbf5;
+            overflow: hidden;
+        }
+
+        .modal-soft-orange .modal-header {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+            border-bottom: 1px solid #fed7aa;
+            color: #9a3412;
+            padding: 1rem 1.25rem;
+        }
+
+        .modal-soft-orange .modal-title {
+            font-weight: 600;
+            font-size: 1.15rem;
+        }
+
+        .modal-soft-orange .modal-body {
+            background-color: #fffbf5;
+            padding: 1.5rem;
+        }
+
+        .modal-soft-orange .modal-footer {
+            background-color: #fff7ed;
+            border-top: 1px solid #fed7aa;
+            padding: 0.75rem 1.25rem;
+        }
+
+        .modal-soft-orange .avatar-box {
+            width: 75px;
+            height: 75px;
+            background: linear-gradient(135deg, #ffedd5, #fed7aa);
+            border: 2px solid #fdba74;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.25rem auto;
+            color: #ea580c;
+            font-size: 2rem;
+            box-shadow: 0 4px 10px rgba(251, 146, 60, 0.2);
+        }
+
+        .modal-soft-orange .table-info-custom {
+            width: 100%;
+            margin-bottom: 0;
+        }
+
+        .modal-soft-orange .table-info-custom th,
+        .modal-soft-orange .table-info-custom td {
+            padding: 0.6rem 0.75rem;
+            border-bottom: 1px dashed #fed7aa;
+            font-size: 0.95rem;
+        }
+
+        .modal-soft-orange .table-info-custom tr:last-child th,
+        .modal-soft-orange .table-info-custom tr:last-child td {
+            border-bottom: none;
+        }
+
+        .modal-soft-orange .table-info-custom th {
+            color: #c2410c;
+            width: 32%;
+            font-weight: 600;
+        }
+
+        .modal-soft-orange .table-info-custom td {
+            color: #431407;
+        }
+
+        .btn-soft-orange {
+            background: linear-gradient(135deg, #fb923c, #f97316);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 6px 20px;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .btn-soft-orange:hover {
+            background: linear-gradient(135deg, #f97316, #ea580c);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+        }
+
+        /* Navbar Soft Orange */
+        .navbar-soft-orange {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%) !important;
+            border-bottom: 1px solid #fed7aa;
+            box-shadow: 0 2px 12px rgba(251, 146, 60, 0.15);
+        }
+
+        .navbar-soft-orange .navbar-brand {
+            color: #9a3412 !important;
+            font-weight: 700;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-soft-orange .navbar-brand i {
+            color: #ea580c;
+        }
+
+        .navbar-soft-orange .nav-link {
+            color: #c2410c !important;
+            font-weight: 500;
+            padding: 6px 14px !important;
+            border-radius: 8px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .navbar-soft-orange .nav-link:hover {
+            color: #7c2d12 !important;
+            background-color: rgba(251, 146, 60, 0.18);
+        }
+
+        .navbar-soft-orange .navbar-toggler {
+            border-color: #fdba74;
+        }
+
+        .navbar-soft-orange .navbar-toggler-icon {
+            filter: invert(36%) sepia(87%) saturate(1512%) hue-rotate(358deg) brightness(94%) contrast(92%);
+        }
+
+        /* Leaflet Control Layers - Soft Orange Theme */
+        .leaflet-control-layers {
+            border: 1px solid #fed7aa !important;
+            border-radius: 12px !important;
+            box-shadow: 0 8px 24px rgba(251, 146, 60, 0.2) !important;
+            background: #fffbf5 !important;
+            padding: 12px 14px !important;
+            color: #431407 !important;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .leaflet-control-layers-separator {
+            border-top: 1px dashed #fed7aa !important;
+            margin: 10px 0 !important;
+        }
+
+        .layer-control-header {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #9a3412;
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+            border-bottom: 2px solid #fdba74;
+            display: flex;
+            align-items: center;
+        }
+
+        .layer-control-header i {
+            color: #ea580c;
+        }
+
+        .leaflet-control-layers input[type="radio"],
+        .leaflet-control-layers input[type="checkbox"] {
+            accent-color: #ea580c;
+            cursor: pointer;
+        }
+
+        .leaflet-control-layers-base label,
+        .leaflet-control-layers-overlays label {
+            margin-bottom: 6px;
+            cursor: pointer;
+        }
+
+        .leaflet-control-layers-base label>div,
+        .leaflet-control-layers-overlays label>div {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .leaflet-control-layers-base input[type="radio"] {
+            margin-top: 3px;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+
+        .leaflet-control-layers-overlays input[type="checkbox"] {
+            margin-top: 4px;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+
+        /* Legend Elements */
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #431407;
+        }
+
+        .legend-icon-img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            margin-right: 6px;
+        }
+
+        .legend-line-sample {
+            display: inline-block;
+            width: 22px;
+            height: 4px;
+            background-color: red;
+            border-radius: 2px;
+            margin-right: 6px;
+        }
+
+        .legend-line-propinsi {
+            display: inline-block;
+            width: 22px;
+            height: 3px;
+            background-color: red;
+            margin-right: 6px;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+
+        .legend-line-kabupaten {
+            display: inline-block;
+            width: 22px;
+            height: 0px;
+            border-top: 1.5px dashed red;
+            margin-right: 6px;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+
+        .legend-line-lain {
+            display: inline-block;
+            width: 22px;
+            height: 0px;
+            border-top: 1px dotted red;
+            margin-right: 6px;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+
+        .legend-group-container {
+            display: inline-block;
+            width: 100%;
+        }
+
+        .legend-group-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #431407;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .legend-sublist {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding-left: 6px;
+            margin-top: 3px;
+            border-left: 2px solid #fed7aa;
+            margin-left: 2px;
+        }
+
+        .legend-subitem {
+            display: flex;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #7c2d12;
+            line-height: 1.2;
+        }
+
+        .legend-color-box {
+            display: inline-block;
+            width: 18px;
+            height: 14px;
+            margin-right: 6px;
+            border-radius: 2px;
+            border: 1px solid rgba(0, 0, 0, 0.4);
+            flex-shrink: 0;
         }
     </style>
 </head>
 
 <body>
+
+    <nav class="navbar navbar-expand-lg navbar-soft-orange">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#"><i class="fa-solid fa-map-location-dot me-2"></i>Flores Timur</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fa-solid fa-link"></i> Link</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#aboutModal"><i
+                                class="fa-solid fa-circle-info"></i> About</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
     <div id="map"></div>
+
+    <!-- Modal About Pembuat -->
+    <div class="modal fade modal-soft-orange" id="aboutModal" tabindex="-1" aria-labelledby="aboutModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="aboutModalLabel">
+                        <i class="fa-solid fa-user-circle me-2"></i>Tentang Pembuat
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="avatar-box">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <table class="table-info-custom text-start">
+                        <tbody>
+                            <tr>
+                                <th><i class="fa-solid fa-user me-2"></i>Nama</th>
+                                <td>: Refania Azhari Siregar</td>
+                            </tr>
+                            <tr>
+                                <th><i class="fa-solid fa-id-card me-2"></i>NIM</th>
+                                <td>: 25/561443/SV/16581</td>
+                            </tr>
+                            <tr>
+                                <th><i class="fa-solid fa-chalkboard-user me-2"></i>Kelas</th>
+                                <td>: Praktikum PGWEB B</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-soft-orange" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
@@ -28,6 +383,13 @@
     <script>
         // Inisialisasi peta
         var map = L.map("map").setView([-8.3114102, 123.1690979], 11);
+
+        // Map Panes
+        map.createPane('jalan');
+        map.getPane('jalan').style.zIndex = 400;
+
+        map.createPane('jumlah_penduduk');
+        map.getPane('jumlah_penduduk').style.zIndex = 300;
 
         // Tile Layer Base Map
         var basemap = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -82,12 +444,40 @@
 
         // GeoJSON Polyline Jalan
         var jalan = L.geoJSON(null, {
+            pane: 'jalan',
             // Style
             style: function (feature) {
+                if (feature.properties.NAMA_UNSUR === "Jalan Propinsi") {
+                    return {
+                        pane: 'jalan',
+                        color: "red",
+                        weight: 3,
+                        opacity: 1,
+                    };
+                }
+                if (feature.properties.NAMA_UNSUR === "Jalan Kabupaten") {
+                    return {
+                        pane: 'jalan',
+                        color: "red",
+                        weight: 1.5,
+                        dashArray: "10, 6",
+                        opacity: 1,
+                    };
+                }
+                if (feature.properties.NAMA_UNSUR === "Jalan Lain") {
+                    return {
+                        pane: 'jalan',
+                        color: "red",
+                        weight: 1,
+                        dashArray: "2, 3",
+                        opacity: 1,
+                    };
+                }
                 return {
+                    pane: 'jalan',
                     color: "red",
+                    weight: 1,
                     opacity: 1,
-                    weight: 3,
                 };
             },
 
@@ -119,10 +509,12 @@
 
         // GeoJSON Polygon Jumlah Penduduk
         var jumlah_penduduk = L.geoJSON(null, {
+            pane: 'jumlah_penduduk',
             // Style
             style: function (feature) {
                 if (feature.properties.Penduduk <= 12000) {
                     return {
+                        pane: 'jumlah_penduduk',
                         opacity: 1,
                         color: 'black',
                         weight: 1.0,
@@ -132,6 +524,7 @@
                 }
                 if (feature.properties.Penduduk > 12000 && feature.properties.Penduduk <= 24000) {
                     return {
+                        pane: 'jumlah_penduduk',
                         opacity: 1,
                         color: 'black',
                         weight: 1.0,
@@ -141,6 +534,7 @@
                 }
                 if (feature.properties.Penduduk > 24000) {
                     return {
+                        pane: 'jumlah_penduduk',
                         opacity: 1,
                         color: 'black',
                         weight: 1.0,
@@ -175,19 +569,49 @@
             jumlah_penduduk.addData(data); // Menambahkan data ke dalam GeoJSON Polygon Jumlah Penduduk
             map.addLayer(jumlah_penduduk); // Menambahkan GeoJSON Polygon Jumlah Penduduk ke dalam peta
         });
-        // Control Layer
+        // Control Layer dengan Legenda
         var baseMaps = {
-            "OpenStreetMap": basemap,
+            '<span class="legend-item"><i class="fa-solid fa-earth-americas me-2 text-warning"></i>OpenStreetMap</span>': basemap,
         };
 
-        var overlayMaps = {
-            "Toponimi": toponimi,
-            "Jalan": jalan,
-            "Jumlah Penduduk": jumlah_penduduk,
-        };
+        var labelJalan =
+            '<span class="legend-group-container">' +
+            '<span class="legend-group-title"><i class="fa-solid fa-road me-1 text-danger"></i> Jalan</span>' +
+            '<span class="legend-sublist">' +
+            '<span class="legend-subitem"><span class="legend-line-propinsi"></span> Jalan Propinsi</span>' +
+            '<span class="legend-subitem"><span class="legend-line-kabupaten"></span> Jalan Kabupaten</span>' +
+            '<span class="legend-subitem"><span class="legend-line-lain"></span> Jalan Lain</span>' +
+            '</span>' +
+            '</span>';
 
-        var controllayer = L.control.layers(baseMaps, overlayMaps);
+        var labelJumlahPenduduk =
+            '<span class="legend-group-container">' +
+            '<span class="legend-group-title"><i class="fa-solid fa-users me-1 text-danger"></i> Jumlah Penduduk</span>' +
+            '<span class="legend-sublist">' +
+            '<span class="legend-subitem"><span class="legend-color-box" style="background-color: #ffffb2;"></span> &le; 12.000 Jiwa</span>' +
+            '<span class="legend-subitem"><span class="legend-color-box" style="background-color: #fd8d3c;"></span> 12.001 - 24.000 Jiwa</span>' +
+            '<span class="legend-subitem"><span class="legend-color-box" style="background-color: #bd0026;"></span> &gt; 24.000 Jiwa</span>' +
+            '</span>' +
+            '</span>';
+
+        var overlayMaps = {};
+        overlayMaps['<span class="legend-item"><img src="images/home_marker.png" class="legend-icon-img" alt="Toponimi"> Toponimi</span>'] = toponimi;
+        overlayMaps[labelJalan] = jalan;
+        overlayMaps[labelJumlahPenduduk] = jumlah_penduduk;
+
+        var controllayer = L.control.layers(baseMaps, overlayMaps, {
+            collapsed: false
+        });
         controllayer.addTo(map);
+
+        // Header pada kontrol layer & legenda
+        var controlContainer = controllayer.getContainer();
+        if (controlContainer) {
+            var header = document.createElement("div");
+            header.className = "layer-control-header";
+            header.innerHTML = '<i class="fa-solid fa-layer-group me-2"></i>Legenda & Layer';
+            controlContainer.prepend(header);
+        }
 
     </script>
 </body>
